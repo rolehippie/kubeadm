@@ -1,0 +1,127 @@
+# Standards: 1.2
+---
+# @var kubeadm_kubernetes_version:description: Vrsion of Kubernetes to install
+kubeadm_kubernetes_version: 1.23
+
+# @var kubeadm_master_nodes:description: List of node names part of master role
+# @var kubeadm_master_nodes:example: >
+# kubeadm_master_nodes:
+#   - master-01
+#   - master-02
+#   - master-03
+# @end
+kubeadm_master_nodes: []
+
+# @var kubeadm_worker_nodes:description: List of node names part of worker role
+# @var kubeadm_worker_nodes:example: >
+# kubeadm_worker_nodes:
+#   - worker-01
+#   - worker-02
+#   - worker-03
+# @end
+kubeadm_worker_nodes: []
+
+# @var kubeadm_bootstrap_token:description: Bootstrap tolken used for node init and join
+# @var kubeadm_bootstrap_token:example: $ "abcdef.0123456789abcdef"
+kubeadm_bootstrap_token:
+
+# @var kubeadm_bootstrap_expire:description: Expire duration for bootstrap token, never expires by default
+kubeadm_bootstrap_expire: 0
+
+# @var kubeadm_cluster_name:description: Name of the Kubernetes cluster
+kubeadm_cluster_name: kubernetes
+
+# @var kubeadm_local_address:description: Address to bind the controlplane to
+kubeadm_local_address: 127.0.0.1
+
+# @var kubeadm_local_port:description: Port to bind the controlplane to
+kubeadm_local_port: 6443
+
+# @var kubeadm_apiserver_endpoint:description: Fixed endpoint for the controlplane
+# @var kubeadm_apiserver_endpoint:example: $ "kubernetes.example.com:6443"
+kubeadm_apiserver_endpoint: 127.0.0.1:6443
+
+# @var kubeadm_apiserver_extrargs:description: Extra args for the apiserver
+kubeadm_apiserver_extrargs:
+  authorization-mode: Node,RBAC
+
+# @var kubeadm_apiserver_certsans:description: Extra sans for the apiserver
+kubeadm_apiserver_certsans: []
+
+# @var kubeadm_cri_socket:description: Path to container runtime socket
+kubeadm_cri_socket: /run/containerd/containerd.sock
+
+# @var kubeadm_init_configuration:description: Kubeadm init configuration content
+kubeadm_init_configuration: |
+  bootstrapTokens:
+    - token: {{ kubeadm_bootstrap_token }}
+      ttl: "{{ kubeadm_bootstrap_expire }}"
+      usages:
+        - signing
+        - authentication
+      groups:
+        - system:bootstrappers:kubeadm:default-node-token
+  localAPIEndpoint:
+    advertiseAddress: {{ kubeadm_local_address }}
+    bindPort: {{ kubeadm_local_port }}
+  nodeRegistration:
+    criSocket: {{ kubeadm_cri_socket }}
+    name: {{ inventory_hostname }}
+
+# @var kubeadm_join_configuration:description: Kubeadm join configuration content
+kubeadm_join_configuration: |
+  discovery:
+    bootstrapToken:
+      apiServerEndpoint: {{ kubeadm_apiserver_endpoint }}
+      token: {{ kubeadm_bootstrap_token }}
+      unsafeSkipCAVerification: True
+  {% if inventory_hostname in kubeadm_master_nodes %}
+  controlPlane:
+    localAPIEndpoint:
+      advertiseAddress: {{ kubeadm_local_address }}
+      bindPort: {{ kubeadm_local_port }}
+  {% endif %}
+  nodeRegistration:
+    criSocket: {{ kubeadm_cri_socket }}
+    name: {{ inventory_hostname }}
+
+# @var kubeadm_cluster_configuration:description: Kubeadm cluster configuration content
+kubeadm_cluster_configuration: |
+  clusterName: {{ kubeadm_cluster_name }}
+  kubernetesVersion: stable-{{ kubeadm_kubernetes_version }}
+  controlPlaneEndpoint: {{ kubeadm_apiserver_endpoint }}
+  apiServer:
+    extraArgs: {{ kubeadm_apiserver_extrargs }}
+    certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}
+
+# @var kubeadm_kubelet_configuration:description: Kubelet configuration content, optionally available
+kubeadm_kubelet_configuration:
+
+# @var kubeadm_kubeproxy_configuration:description: Kubeproxy configuration content, optionally available
+kubeadm_kubeproxy_configuration:
+
+# @var kubeadm_flannel_version:description: Version of flannel manifest
+kubeadm_flannel_version: 0.16.1
+
+# @var kubeadm_flannel_manifests:description: List of manifests for flannel networking
+kubeadm_flannel_manifests:
+  - "https://raw.githubusercontent.com/flannel-io/flannel/v{{ kubeadm_flannel_version }}/Documentation/kube-flannel.yml"
+
+# @var kubeadm_calico_version:description: Version of calico manifest
+kubeadm_calico_version: 3.21
+
+# @var kubeadm_calico_manifests:description: List of manifests for calico networking
+kubeadm_calico_manifests:
+  - "https://docs.projectcalico.org/v{{ kubeadm_calico_version }}/manifests/calico.yaml"
+
+# @var kubeadm_canal_version:description: Version of canal manifest
+kubeadm_canal_version: 3.21
+
+# @var kubeadm_canal_manifests:description: List of manifests for canal networking
+kubeadm_canal_manifests:
+  - "https://docs.projectcalico.org/v{{ kubeadm_canal_version }}/manifests/canal.yaml"
+
+# @var kubeadm_network_provider:description: Name of network provider to use, could be flannel, calico or canal
+kubeadm_network_provider: none
+
+...

@@ -1,0 +1,92 @@
+# Standards: 1.2
+---
+- name: Create required dirs
+  loop:
+    - /etc/kubernetes
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+  tags:
+    - kubeadm
+
+- name: Download repo key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    id: 59FE0256827269DC81578F928B57C5C2836F4BEB
+    state: present
+  tags:
+    - kubeadm
+
+- name: Add apt repository
+  apt_repository:
+    repo: "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+    filename: kubeadm
+    update_cache: True
+    state: present
+  tags:
+    - kubeadm
+
+- name: Pin package version
+  copy:
+    content: |
+      Explantion: Pin added by kubeadm role
+      Package: kubectl
+      Pin: version {{ kubeadm_kubernetes_version }}*
+      Pin-Priority: 1000
+
+      Explantion: Pin added by kubeadm role
+      Package: kubeadm
+      Pin: version {{ kubeadm_kubernetes_version }}*
+      Pin-Priority: 1000
+
+      Explantion: Pin added by kubeadm role
+      Package: kubelet
+      Pin: version {{ kubeadm_kubernetes_version }}*
+      Pin-Priority: 1000
+    dest: /etc/apt/preferences.d/kubeadm
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  tags:
+    - kubeadm
+
+- name: Install required packages
+  loop:
+    - kubectl
+    - kubeadm
+    - kubelet
+    - kubernetes-cni
+  package:
+    name: "{{ item }}"
+    state: present
+  tags:
+    - kubeadm
+
+- name: Start kubelet service
+  systemd:
+    name: kubelet
+    state: started
+    daemon_reload: True
+    masked: False
+    enabled: True
+  tags:
+    - kubeadm
+
+- name: Handle init tasks
+  when:
+    - inventory_hostname == kubeadm_master_nodes | sort | first
+  include_tasks: init.yml
+  tags:
+    - kubeadm
+
+- name: Handle join tasks
+  when:
+    - inventory_hostname != kubeadm_master_nodes | sort | first
+  include_tasks: join.yml
+  tags:
+    - kubeadm
+
+...

@@ -1,0 +1,35 @@
+{% if kubeadm_init_configuration | default(False) %}
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+{{ kubeadm_init_configuration | from_yaml | to_nice_yaml(indent=2) | trim }}
+...
+{% endif %}
+{% if kubeadm_join_configuration | default(False) %}
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+{{ kubeadm_join_configuration | from_yaml | to_nice_yaml(indent=2) | trim }}
+...
+{% endif %}
+{% if kubeadm_cluster_configuration | default(False) %}
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+{{ kubeadm_cluster_configuration | from_yaml | to_nice_yaml(indent=2) | trim }}
+...
+{% endif %}
+{% if kubeadm_kubelet_configuration | default(False) %}
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+{{ kubeadm_kubelet_configuration | from_yaml | to_nice_yaml(indent=2) | trim }}
+...
+{% endif %}
+{% if kubeadm_kubeproxy_configuration | default(False) %}
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+{{ kubeadm_kubeproxy_configuration | from_yaml | to_nice_yaml(indent=2) | trim }}
+...
+{% endif %}

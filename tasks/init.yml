@@ -1,0 +1,68 @@
+# Standards: 1.2
+---
+- name: Stat kubelet config
+  register: kubeadm_config_file
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  tags:
+    - kubeadm
+
+- name: Group init tasks
+  when:
+    - not kubeadm_config_file.stat.exists
+  tags:
+    - kubeadm
+  block:
+    - name: Write kubeadm config
+      template:
+        src: config.j2
+        dest: /etc/kubernetes/kubeadm.conf
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=
+      tags:
+        - kubeadm
+
+    - name: Initialize master node
+      command:
+        cmd: kubeadm init --config /etc/kubernetes/kubeadm.conf
+      tags:
+        - kubeadm
+
+    - name: Configure flannel network
+        - kubeadm_network_provider == 'flannel'
+      loop: "{{ kubeadm_flannel_manifests }}"
+      register: kubeadm_flannel_install
+      changed_when: "'created' in kubeadm_flannel_install.stdout"
+      command:
+        cmd: "kubectl apply -f {{ item }}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      tags:
+        - kubeadm
+
+    - name: Configure calico network
+        - kubeadm_network_provider == 'calico'
+      loop: "{{ kubeadm_calico_manifests }}"
+      register: kubeadm_calico_install
+      changed_when: "'created' in kubeadm_calico_install.stdout"
+      command:
+        cmd: "kubectl apply -f {{ item }}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      tags:
+        - kubeadm
+
+    - name: Configure canal network
+        - kubeadm_network_provider == 'canal'
+      loop: "{{ kubeadm_canal_manifests }}"
+      register: kubeadm_canal_install
+      changed_when: "'created' in kubeadm_canal_install.stdout"
+      command:
+        cmd: "kubectl apply -f {{ item }}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      tags:
+        - kubeadm
+
+...
