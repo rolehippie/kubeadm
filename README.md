@@ -27,11 +27,14 @@ Building and improving this Ansible role have been sponsored by my employer **Pr
   * [kubeadm_cri_socket](#kubeadm_cri_socket)
   * [kubeadm_flannel_manifests](#kubeadm_flannel_manifests)
   * [kubeadm_flannel_version](#kubeadm_flannel_version)
+  * [kubeadm_general_networking](#kubeadm_general_networking)
   * [kubeadm_init_configuration](#kubeadm_init_configuration)
   * [kubeadm_join_configuration](#kubeadm_join_configuration)
   * [kubeadm_kubelet_configuration](#kubeadm_kubelet_configuration)
   * [kubeadm_kubeproxy_configuration](#kubeadm_kubeproxy_configuration)
   * [kubeadm_kubernetes_version](#kubeadm_kubernetes_version)
+  * [kubeadm_kuberouter_manifests](#kubeadm_kuberouter_manifests)
+  * [kubeadm_kuberouter_version](#kubeadm_kuberouter_version)
   * [kubeadm_local_address](#kubeadm_local_address)
   * [kubeadm_local_port](#kubeadm_local_port)
   * [kubeadm_master_nodes](#kubeadm_master_nodes)
@@ -159,8 +162,10 @@ Kubeadm cluster configuration content
 ```YAML
 kubeadm_cluster_configuration: "clusterName: {{ kubeadm_cluster_name }}\nkubernetesVersion:\
   \ stable-{{ kubeadm_kubernetes_version }}\ncontrolPlaneEndpoint: {{ kubeadm_apiserver_endpoint\
-  \ }}\napiServer:\n  extraArgs: {{ kubeadm_apiserver_extrargs }}\n  certSANs: {{\
-  \ kubeadm_apiserver_certsans | from_yaml }}\n"
+  \ }}\napiServer:\n  bindAddress: {{ kubeadm_local_address }}\n  extraArgs: {{ kubeadm_apiserver_extrargs\
+  \ }}\n  certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}\nscheduler:\n  bindAddress:\
+  \ {{ kubeadm_local_address }}\ncontrollerManager:\n  bindAddress: {{ kubeadm_local_address\
+  \ }}\nnetworking:\n  serviceSubnet: 10.96.0.0/16\n  podSubnet: 10.244.0.0/16\n"
 ```
 
 ### kubeadm_cluster_name
@@ -203,6 +208,16 @@ Version of flannel manifest
 
 ```YAML
 kubeadm_flannel_version: 0.16.1
+```
+
+### kubeadm_general_networking
+
+List of manifests for general networking
+
+#### Default value
+
+```YAML
+kubeadm_general_networking: []
 ```
 
 ### kubeadm_init_configuration
@@ -265,6 +280,28 @@ Vrsion of Kubernetes to install
 kubeadm_kubernetes_version: 1.23
 ```
 
+### kubeadm_kuberouter_manifests
+
+List of manifests for kube-router networking
+
+#### Default value
+
+```YAML
+kubeadm_kuberouter_manifests:
+  - https://raw.githubusercontent.com/cloudnativelabs/kube-router/v{{ kubeadm_kuberouter_version
+    }}/daemonset/kubeadm-kuberouter-all-features.yaml
+```
+
+### kubeadm_kuberouter_version
+
+Version of kube-router manifest
+
+#### Default value
+
+```YAML
+kubeadm_kuberouter_version: 1.4.0
+```
+
 ### kubeadm_local_address
 
 Address to bind the controlplane to
@@ -306,7 +343,7 @@ kubeadm_master_nodes:
 
 ### kubeadm_network_provider
 
-Name of network provider to use, could be flannel, calico or canal
+Name of network provider to use, could be kuberouter, flannel, calico or canal
 
 #### Default value
 

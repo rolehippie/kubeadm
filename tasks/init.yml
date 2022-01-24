@@ -29,7 +29,21 @@
       tags:
         - kubeadm
 
+    - name: Configure kuberouter network
+      when:
+        - kubeadm_network_provider == 'kuberouter'
+      loop: "{{ kubeadm_kuberouter_manifests }}"
+      register: kubeadm_kuberouter_install
+      changed_when: "'created' in kubeadm_kuberouter_install.stdout"
+      command:
+        cmd: "kubectl apply -f {{ item }}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      tags:
+        - kubeadm
+
     - name: Configure flannel network
+      when:
         - kubeadm_network_provider == 'flannel'
       loop: "{{ kubeadm_flannel_manifests }}"
       register: kubeadm_flannel_install
@@ -42,6 +56,7 @@
         - kubeadm
 
     - name: Configure calico network
+      when:
         - kubeadm_network_provider == 'calico'
       loop: "{{ kubeadm_calico_manifests }}"
       register: kubeadm_calico_install
@@ -54,10 +69,24 @@
         - kubeadm
 
     - name: Configure canal network
+      when:
         - kubeadm_network_provider == 'canal'
       loop: "{{ kubeadm_canal_manifests }}"
       register: kubeadm_canal_install
       changed_when: "'created' in kubeadm_canal_install.stdout"
+      command:
+        cmd: "kubectl apply -f {{ item }}"
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      tags:
+        - kubeadm
+
+    - name: Configure general network
+      when:
+        - kubeadm_general_networking | default(False)
+      loop: "{{ kubeadm_general_networking }}"
+      register: kubeadm_general_install
+      changed_when: "'created' in kubeadm_general_install.stdout"
       command:
         cmd: "kubectl apply -f {{ item }}"
       environment:

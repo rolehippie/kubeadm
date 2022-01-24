@@ -91,14 +91,29 @@ kubeadm_cluster_configuration: |
   kubernetesVersion: stable-{{ kubeadm_kubernetes_version }}
   controlPlaneEndpoint: {{ kubeadm_apiserver_endpoint }}
   apiServer:
+    bindAddress: {{ kubeadm_local_address }}
     extraArgs: {{ kubeadm_apiserver_extrargs }}
     certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}
+  scheduler:
+    bindAddress: {{ kubeadm_local_address }}
+  controllerManager:
+    bindAddress: {{ kubeadm_local_address }}
+  networking:
+    serviceSubnet: 10.96.0.0/16
+    podSubnet: 10.244.0.0/16
 
 # @var kubeadm_kubelet_configuration:description: Kubelet configuration content, optionally available
 kubeadm_kubelet_configuration:
 
 # @var kubeadm_kubeproxy_configuration:description: Kubeproxy configuration content, optionally available
 kubeadm_kubeproxy_configuration:
+
+# @var kubeadm_kuberouter_version:description: Version of kube-router manifest
+kubeadm_kuberouter_version: 1.4.0
+
+# @var kubeadm_kuberouter_manifests:description: List of manifests for kube-router networking
+kubeadm_kuberouter_manifests:
+  - "https://raw.githubusercontent.com/cloudnativelabs/kube-router/v{{ kubeadm_kuberouter_version }}/daemonset/kubeadm-kuberouter-all-features.yaml"
 
 # @var kubeadm_flannel_version:description: Version of flannel manifest
 kubeadm_flannel_version: 0.16.1
@@ -121,7 +136,10 @@ kubeadm_canal_version: 3.21
 kubeadm_canal_manifests:
   - "https://docs.projectcalico.org/v{{ kubeadm_canal_version }}/manifests/canal.yaml"
 
-# @var kubeadm_network_provider:description: Name of network provider to use, could be flannel, calico or canal
+# @var kubeadm_general_networking:description: List of manifests for general networking
+kubeadm_general_networking: []
+
+# @var kubeadm_network_provider:description: Name of network provider to use, could be kuberouter, flannel, calico or canal
 kubeadm_network_provider: none
 
 ...
