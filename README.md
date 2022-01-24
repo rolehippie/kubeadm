@@ -82,6 +82,7 @@ Extra args for the apiserver
 
 ```YAML
 kubeadm_apiserver_extrargs:
+  bind-address: '{{ kubeadm_local_address }}'
   authorization-mode: Node,RBAC
 ```
 
@@ -162,10 +163,11 @@ Kubeadm cluster configuration content
 ```YAML
 kubeadm_cluster_configuration: "clusterName: {{ kubeadm_cluster_name }}\nkubernetesVersion:\
   \ stable-{{ kubeadm_kubernetes_version }}\ncontrolPlaneEndpoint: {{ kubeadm_apiserver_endpoint\
-  \ }}\napiServer:\n  bindAddress: {{ kubeadm_local_address }}\n  extraArgs: {{ kubeadm_apiserver_extrargs\
-  \ }}\n  certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}\nscheduler:\n  bindAddress:\
-  \ {{ kubeadm_local_address }}\ncontrollerManager:\n  bindAddress: {{ kubeadm_local_address\
-  \ }}\nnetworking:\n  serviceSubnet: 10.96.0.0/16\n  podSubnet: 10.244.0.0/16\n"
+  \ }}\napiServer:\n  extraArgs: {{ kubeadm_apiserver_extrargs }}\n  certSANs: {{\
+  \ kubeadm_apiserver_certsans | from_yaml }}\nscheduler:\n  extraArgs:\n    bind-address:\
+  \ {{ kubeadm_local_address }}\ncontrollerManager:\n  extraArgs:\n    bind-address:\
+  \ {{ kubeadm_local_address }}\nnetworking:\n  serviceSubnet: 10.96.0.0/16\n  podSubnet:\
+  \ 10.244.0.0/16\n"
 ```
 
 ### kubeadm_cluster_name

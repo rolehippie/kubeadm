@@ -43,6 +43,7 @@ kubeadm_apiserver_endpoint: 127.0.0.1:6443
 
 # @var kubeadm_apiserver_extrargs:description: Extra args for the apiserver
 kubeadm_apiserver_extrargs:
+  bind-address: "{{ kubeadm_local_address }}"
   authorization-mode: Node,RBAC
 
 # @var kubeadm_apiserver_certsans:description: Extra sans for the apiserver
@@ -95,13 +96,14 @@ kubeadm_cluster_configuration: |
   kubernetesVersion: stable-{{ kubeadm_kubernetes_version }}
   controlPlaneEndpoint: {{ kubeadm_apiserver_endpoint }}
   apiServer:
-    bindAddress: {{ kubeadm_local_address }}
     extraArgs: {{ kubeadm_apiserver_extrargs }}
     certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}
   scheduler:
-    bindAddress: {{ kubeadm_local_address }}
+    extraArgs:
+      bind-address: {{ kubeadm_local_address }}
   controllerManager:
-    bindAddress: {{ kubeadm_local_address }}
+    extraArgs:
+      bind-address: {{ kubeadm_local_address }}
   networking:
     serviceSubnet: 10.96.0.0/16
     podSubnet: 10.244.0.0/16
