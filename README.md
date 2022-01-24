@@ -232,7 +232,8 @@ kubeadm_init_configuration: "bootstrapTokens:\n  - token: {{ kubeadm_bootstrap_t
   \      - authentication\n    groups:\n      - system:bootstrappers:kubeadm:default-node-token\n\
   localAPIEndpoint:\n  advertiseAddress: {{ kubeadm_local_address }}\n  bindPort:\
   \ {{ kubeadm_local_port }}\nnodeRegistration:\n  criSocket: {{ kubeadm_cri_socket\
-  \ }}\n  name: {{ inventory_hostname }}\n"
+  \ }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs:\n    node-ip: {{ kubeadm_local_address\
+  \ }}\n"
 ```
 
 ### kubeadm_join_configuration
@@ -247,7 +248,8 @@ kubeadm_join_configuration: "discovery:\n  bootstrapToken:\n    apiServerEndpoin
   \   unsafeSkipCAVerification: True\n{% if inventory_hostname in kubeadm_master_nodes\
   \ %}\ncontrolPlane:\n  localAPIEndpoint:\n    advertiseAddress: {{ kubeadm_local_address\
   \ }}\n    bindPort: {{ kubeadm_local_port }}\n{% endif %}\nnodeRegistration:\n \
-  \ criSocket: {{ kubeadm_cri_socket }}\n  name: {{ inventory_hostname }}\n"
+  \ criSocket: {{ kubeadm_cri_socket }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs:\n\
+  \    node-ip: {{ kubeadm_local_address }}\n"
 ```
 
 ### kubeadm_kubelet_configuration

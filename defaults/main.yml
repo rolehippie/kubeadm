@@ -67,6 +67,8 @@ kubeadm_init_configuration: |
   nodeRegistration:
     criSocket: {{ kubeadm_cri_socket }}
     name: {{ inventory_hostname }}
+    kubeletExtraArgs:
+      node-ip: {{ kubeadm_local_address }}
 
 # @var kubeadm_join_configuration:description: Kubeadm join configuration content
 kubeadm_join_configuration: |
@@ -84,6 +86,8 @@ kubeadm_join_configuration: |
   nodeRegistration:
     criSocket: {{ kubeadm_cri_socket }}
     name: {{ inventory_hostname }}
+    kubeletExtraArgs:
+      node-ip: {{ kubeadm_local_address }}
 
 # @var kubeadm_cluster_configuration:description: Kubeadm cluster configuration content
 kubeadm_cluster_configuration: |
