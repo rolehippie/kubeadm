@@ -37,14 +37,43 @@ kubeadm_local_address: 127.0.0.1
 # @var kubeadm_local_port:description: Port to bind the controlplane to
 kubeadm_local_port: 6443
 
+kubeadm_cloud_provider: external
+
 # @var kubeadm_apiserver_endpoint:description: Fixed endpoint for the controlplane
 # @var kubeadm_apiserver_endpoint:example: $ "kubernetes.example.com:6443"
 kubeadm_apiserver_endpoint: 127.0.0.1:6443
 
-# @var kubeadm_apiserver_extrargs:description: Extra args for the apiserver
-kubeadm_apiserver_extrargs:
-  bind-address: "{{ kubeadm_local_address }}"
+# @var kubeadm_default_apiserver_args:description: Default args for the apiserver
+kubeadm_default_apiserver_args:
+  bind-address: 0.0.0.0
+  cloud-provider: "{{ kubeadm_cloud_provider }}"
   authorization-mode: Node,RBAC
+
+# @var kubeadm_extra_apiserver_args:description: Extra args for the apiserver
+kubeadm_extra_apiserver_args: {}
+
+# @var kubeadm_default_kubelet_args:description: Default args for the kubelet
+kubeadm_default_kubelet_args:
+  node-ip: "{{ kubeadm_local_address }}"
+  cloud-provider: "{{ kubeadm_cloud_provider }}"
+
+# @var kubeadm_extra_kubelet_args:description: Extra args for the kubelet
+kubeadm_extra_kubelet_args: {}
+
+# @var kubeadm_default_scheduler_args:description: Default args for the scheduler
+kubeadm_default_scheduler_args:
+  bind-address: 0.0.0.0
+
+# @var kubeadm_extra_scheduler_args:description: Extra args for the scheduler
+kubeadm_extra_scheduler_args: {}
+
+# @var kubeadm_default_controller_args:description: Default args for the controller
+kubeadm_default_controller_args:
+  bind-address: 0.0.0.0
+  cloud-provider: "{{ kubeadm_cloud_provider }}"
+
+# @var kubeadm_extra_controller_args:description: Extra args for the controller
+kubeadm_extra_controller_args: {}
 
 # @var kubeadm_apiserver_certsans:description: Extra sans for the apiserver
 kubeadm_apiserver_certsans: []
@@ -68,8 +97,7 @@ kubeadm_init_configuration: |
   nodeRegistration:
     criSocket: {{ kubeadm_cri_socket }}
     name: {{ inventory_hostname }}
-    kubeletExtraArgs:
-      node-ip: {{ kubeadm_local_address }}
+    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
 
 # @var kubeadm_join_configuration:description: Kubeadm join configuration content
 kubeadm_join_configuration: |
@@ -87,8 +115,7 @@ kubeadm_join_configuration: |
   nodeRegistration:
     criSocket: {{ kubeadm_cri_socket }}
     name: {{ inventory_hostname }}
-    kubeletExtraArgs:
-      node-ip: {{ kubeadm_local_address }}
+    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
 
 # @var kubeadm_cluster_configuration:description: Kubeadm cluster configuration content
 kubeadm_cluster_configuration: |
@@ -96,14 +123,12 @@ kubeadm_cluster_configuration: |
   kubernetesVersion: stable-{{ kubeadm_kubernetes_version }}
   controlPlaneEndpoint: {{ kubeadm_apiserver_endpoint }}
   apiServer:
-    extraArgs: {{ kubeadm_apiserver_extrargs }}
+    extraArgs: {{ kubeadm_default_apiserver_args | combine(kubeadm_extra_apiserver_args) }}
     certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}
   scheduler:
-    extraArgs:
-      bind-address: {{ kubeadm_local_address }}
+    extraArgs: {{ kubeadm_default_scheduler_args | combine(kubeadm_extra_scheduler_args) }}
   controllerManager:
-    extraArgs:
-      bind-address: {{ kubeadm_local_address }}
+    extraArgs: {{ kubeadm_default_controller_args | combine(kubeadm_extra_controller_args) }}
   networking:
     serviceSubnet: 10.96.0.0/16
     podSubnet: 10.244.0.0/16

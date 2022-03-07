@@ -7,22 +7,22 @@
   tags:
     - kubeadm
 
+- name: Write kubeadm config
+  template:
+    src: config.j2
+    dest: /etc/kubernetes/kubeadm.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=
+  tags:
+    - kubeadm
+
 - name: Group init tasks
   when:
     - not kubeadm_config_file.stat.exists
   tags:
     - kubeadm
   block:
-    - name: Write kubeadm config
-      template:
-        src: config.j2
-        dest: /etc/kubernetes/kubeadm.conf
-        owner: root
-        group: root
-        mode: u=rw,g=r,o=
-      tags:
-        - kubeadm
-
     - name: Initialize master node
       command:
         cmd: kubeadm init --config /etc/kubernetes/kubeadm.conf

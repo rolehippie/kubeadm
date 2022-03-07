@@ -15,16 +15,24 @@ Building and improving this Ansible role have been sponsored by my employer **Pr
 * [Default Variables](#default-variables)
   * [kubeadm_apiserver_certsans](#kubeadm_apiserver_certsans)
   * [kubeadm_apiserver_endpoint](#kubeadm_apiserver_endpoint)
-  * [kubeadm_apiserver_extrargs](#kubeadm_apiserver_extrargs)
   * [kubeadm_bootstrap_expire](#kubeadm_bootstrap_expire)
   * [kubeadm_bootstrap_token](#kubeadm_bootstrap_token)
   * [kubeadm_calico_manifests](#kubeadm_calico_manifests)
   * [kubeadm_calico_version](#kubeadm_calico_version)
   * [kubeadm_canal_manifests](#kubeadm_canal_manifests)
   * [kubeadm_canal_version](#kubeadm_canal_version)
+  * [kubeadm_cloud_provider](#kubeadm_cloud_provider)
   * [kubeadm_cluster_configuration](#kubeadm_cluster_configuration)
   * [kubeadm_cluster_name](#kubeadm_cluster_name)
   * [kubeadm_cri_socket](#kubeadm_cri_socket)
+  * [kubeadm_default_apiserver_args](#kubeadm_default_apiserver_args)
+  * [kubeadm_default_controller_args](#kubeadm_default_controller_args)
+  * [kubeadm_default_kubelet_args](#kubeadm_default_kubelet_args)
+  * [kubeadm_default_scheduler_args](#kubeadm_default_scheduler_args)
+  * [kubeadm_extra_apiserver_args](#kubeadm_extra_apiserver_args)
+  * [kubeadm_extra_controller_args](#kubeadm_extra_controller_args)
+  * [kubeadm_extra_kubelet_args](#kubeadm_extra_kubelet_args)
+  * [kubeadm_extra_scheduler_args](#kubeadm_extra_scheduler_args)
   * [kubeadm_flannel_manifests](#kubeadm_flannel_manifests)
   * [kubeadm_flannel_version](#kubeadm_flannel_version)
   * [kubeadm_general_networking](#kubeadm_general_networking)
@@ -72,18 +80,6 @@ kubeadm_apiserver_endpoint: 127.0.0.1:6443
 
 ```YAML
 kubeadm_apiserver_endpoint: kubernetes.example.com:6443
-```
-
-### kubeadm_apiserver_extrargs
-
-Extra args for the apiserver
-
-#### Default value
-
-```YAML
-kubeadm_apiserver_extrargs:
-  bind-address: '{{ kubeadm_local_address }}'
-  authorization-mode: Node,RBAC
 ```
 
 ### kubeadm_bootstrap_expire
@@ -154,6 +150,14 @@ Version of canal manifest
 kubeadm_canal_version: 3.21
 ```
 
+### kubeadm_cloud_provider
+
+#### Default value
+
+```YAML
+kubeadm_cloud_provider: external
+```
+
 ### kubeadm_cluster_configuration
 
 Kubeadm cluster configuration content
@@ -163,11 +167,11 @@ Kubeadm cluster configuration content
 ```YAML
 kubeadm_cluster_configuration: "clusterName: {{ kubeadm_cluster_name }}\nkubernetesVersion:\
   \ stable-{{ kubeadm_kubernetes_version }}\ncontrolPlaneEndpoint: {{ kubeadm_apiserver_endpoint\
-  \ }}\napiServer:\n  extraArgs: {{ kubeadm_apiserver_extrargs }}\n  certSANs: {{\
-  \ kubeadm_apiserver_certsans | from_yaml }}\nscheduler:\n  extraArgs:\n    bind-address:\
-  \ {{ kubeadm_local_address }}\ncontrollerManager:\n  extraArgs:\n    bind-address:\
-  \ {{ kubeadm_local_address }}\nnetworking:\n  serviceSubnet: 10.96.0.0/16\n  podSubnet:\
-  \ 10.244.0.0/16\n"
+  \ }}\napiServer:\n  extraArgs: {{ kubeadm_default_apiserver_args | combine(kubeadm_extra_apiserver_args)\
+  \ }}\n  certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}\nscheduler:\n  extraArgs:\
+  \ {{ kubeadm_default_scheduler_args | combine(kubeadm_extra_scheduler_args) }}\n\
+  controllerManager:\n  extraArgs: {{ kubeadm_default_controller_args | combine(kubeadm_extra_controller_args)\
+  \ }}\nnetworking:\n  serviceSubnet: 10.96.0.0/16\n  podSubnet: 10.244.0.0/16\n"
 ```
 
 ### kubeadm_cluster_name
@@ -188,6 +192,94 @@ Path to container runtime socket
 
 ```YAML
 kubeadm_cri_socket: /run/containerd/containerd.sock
+```
+
+### kubeadm_default_apiserver_args
+
+Default args for the apiserver
+
+#### Default value
+
+```YAML
+kubeadm_default_apiserver_args:
+  bind-address: 0.0.0.0
+  cloud-provider: '{{ kubeadm_cloud_provider }}'
+  authorization-mode: Node,RBAC
+```
+
+### kubeadm_default_controller_args
+
+Default args for the controller
+
+#### Default value
+
+```YAML
+kubeadm_default_controller_args:
+  bind-address: 0.0.0.0
+  cloud-provider: '{{ kubeadm_cloud_provider }}'
+```
+
+### kubeadm_default_kubelet_args
+
+Default args for the kubelet
+
+#### Default value
+
+```YAML
+kubeadm_default_kubelet_args:
+  node-ip: '{{ kubeadm_local_address }}'
+  cloud-provider: '{{ kubeadm_cloud_provider }}'
+```
+
+### kubeadm_default_scheduler_args
+
+Default args for the scheduler
+
+#### Default value
+
+```YAML
+kubeadm_default_scheduler_args:
+  bind-address: 0.0.0.0
+```
+
+### kubeadm_extra_apiserver_args
+
+Extra args for the apiserver
+
+#### Default value
+
+```YAML
+kubeadm_extra_apiserver_args: {}
+```
+
+### kubeadm_extra_controller_args
+
+Extra args for the controller
+
+#### Default value
+
+```YAML
+kubeadm_extra_controller_args: {}
+```
+
+### kubeadm_extra_kubelet_args
+
+Extra args for the kubelet
+
+#### Default value
+
+```YAML
+kubeadm_extra_kubelet_args: {}
+```
+
+### kubeadm_extra_scheduler_args
+
+Extra args for the scheduler
+
+#### Default value
+
+```YAML
+kubeadm_extra_scheduler_args: {}
 ```
 
 ### kubeadm_flannel_manifests
@@ -234,8 +326,8 @@ kubeadm_init_configuration: "bootstrapTokens:\n  - token: {{ kubeadm_bootstrap_t
   \      - authentication\n    groups:\n      - system:bootstrappers:kubeadm:default-node-token\n\
   localAPIEndpoint:\n  advertiseAddress: {{ kubeadm_local_address }}\n  bindPort:\
   \ {{ kubeadm_local_port }}\nnodeRegistration:\n  criSocket: {{ kubeadm_cri_socket\
-  \ }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs:\n    node-ip: {{ kubeadm_local_address\
-  \ }}\n"
+  \ }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs: {{ kubeadm_default_kubelet_args\
+  \ | combine(kubeadm_extra_kubelet_args) }}\n"
 ```
 
 ### kubeadm_join_configuration
@@ -250,8 +342,8 @@ kubeadm_join_configuration: "discovery:\n  bootstrapToken:\n    apiServerEndpoin
   \   unsafeSkipCAVerification: True\n{% if inventory_hostname in kubeadm_master_nodes\
   \ %}\ncontrolPlane:\n  localAPIEndpoint:\n    advertiseAddress: {{ kubeadm_local_address\
   \ }}\n    bindPort: {{ kubeadm_local_port }}\n{% endif %}\nnodeRegistration:\n \
-  \ criSocket: {{ kubeadm_cri_socket }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs:\n\
-  \    node-ip: {{ kubeadm_local_address }}\n"
+  \ criSocket: {{ kubeadm_cri_socket }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs:\
+  \ {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}\n"
 ```
 
 ### kubeadm_kubelet_configuration

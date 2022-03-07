@@ -7,6 +7,16 @@
   tags:
     - kubeadm
 
+- name: Write kubeadm config
+  template:
+    src: config.j2
+    dest: /etc/kubernetes/kubeadm.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=
+  tags:
+    - kubeadm
+
 - name: Group join tasks
   when:
     - not kubeadm_config_file.stat.exists
@@ -89,16 +99,6 @@
         owner: root
         group: root
         mode: "{{ 'u=rw,g=,o=' if item.source.endswith('.key') else 'u=rw,g=r,o=r' }}"
-      tags:
-        - kubeadm
-
-    - name: Write kubeadm config
-      template:
-        src: config.j2
-        dest: /etc/kubernetes/kubeadm.conf
-        owner: root
-        group: root
-        mode: u=rw,g=r,o=
       tags:
         - kubeadm
 
