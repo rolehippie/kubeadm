@@ -1,56 +1,57 @@
 # kubeadm
 
-[![Source Code](https://img.shields.io/badge/github-source%20code-blue?logo=github&logoColor=white)](https://github.com/rolehippie/kubeadm) [![Testing Build](https://github.com/rolehippie/kubeadm/workflows/testing/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Atesting) [![Readme Build](https://github.com/rolehippie/kubeadm/workflows/readme/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Areadme) [![Galaxy Build](https://github.com/rolehippie/kubeadm/workflows/galaxy/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Agalaxy) [![License: Apache-2.0](https://img.shields.io/github/license/rolehippie/kubeadm)](https://github.com/rolehippie/kubeadm/blob/master/LICENSE) 
+[![Source Code](https://img.shields.io/badge/github-source%20code-blue?logo=github&logoColor=white)](https://github.com/rolehippie/kubeadm) [![Testing Build](https://github.com/rolehippie/kubeadm/workflows/testing/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Atesting) [![Readme Build](https://github.com/rolehippie/kubeadm/workflows/readme/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Areadme) [![Galaxy Build](https://github.com/rolehippie/kubeadm/workflows/galaxy/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Agalaxy) [![License: Apache-2.0](https://img.shields.io/github/license/rolehippie/kubeadm)](https://github.com/rolehippie/kubeadm/blob/master/LICENSE)
 
-Ansible role to install kubeadm and bootstrap Kubernetes. 
+Ansible role to install kubeadm and bootstrap Kubernetes.
 
-## Sponsor 
+## Sponsor
 
-[![Proact Deutschland GmbH](https://proact.eu/wp-content/uploads/2020/03/proact-logo.png)](https://proact.eu) 
+[![Proact Deutschland GmbH](https://proact.eu/wp-content/uploads/2020/03/proact-logo.png)](https://proact.eu)
 
 Building and improving this Ansible role have been sponsored by my employer **Proact Deutschland GmbH**.
 
 ## Table of content
 
-* [Default Variables](#default-variables)
-  * [kubeadm_apiserver_certsans](#kubeadm_apiserver_certsans)
-  * [kubeadm_apiserver_endpoint](#kubeadm_apiserver_endpoint)
-  * [kubeadm_bootstrap_expire](#kubeadm_bootstrap_expire)
-  * [kubeadm_bootstrap_token](#kubeadm_bootstrap_token)
-  * [kubeadm_calico_manifests](#kubeadm_calico_manifests)
-  * [kubeadm_calico_version](#kubeadm_calico_version)
-  * [kubeadm_canal_manifests](#kubeadm_canal_manifests)
-  * [kubeadm_canal_version](#kubeadm_canal_version)
-  * [kubeadm_cloud_provider](#kubeadm_cloud_provider)
-  * [kubeadm_cluster_configuration](#kubeadm_cluster_configuration)
-  * [kubeadm_cluster_name](#kubeadm_cluster_name)
-  * [kubeadm_cri_socket](#kubeadm_cri_socket)
-  * [kubeadm_default_apiserver_args](#kubeadm_default_apiserver_args)
-  * [kubeadm_default_controller_args](#kubeadm_default_controller_args)
-  * [kubeadm_default_kubelet_args](#kubeadm_default_kubelet_args)
-  * [kubeadm_default_scheduler_args](#kubeadm_default_scheduler_args)
-  * [kubeadm_extra_apiserver_args](#kubeadm_extra_apiserver_args)
-  * [kubeadm_extra_controller_args](#kubeadm_extra_controller_args)
-  * [kubeadm_extra_kubelet_args](#kubeadm_extra_kubelet_args)
-  * [kubeadm_extra_scheduler_args](#kubeadm_extra_scheduler_args)
-  * [kubeadm_flannel_manifests](#kubeadm_flannel_manifests)
-  * [kubeadm_flannel_version](#kubeadm_flannel_version)
-  * [kubeadm_general_networking](#kubeadm_general_networking)
-  * [kubeadm_init_configuration](#kubeadm_init_configuration)
-  * [kubeadm_join_configuration](#kubeadm_join_configuration)
-  * [kubeadm_kubelet_configuration](#kubeadm_kubelet_configuration)
-  * [kubeadm_kubeproxy_configuration](#kubeadm_kubeproxy_configuration)
-  * [kubeadm_kubernetes_version](#kubeadm_kubernetes_version)
-  * [kubeadm_kuberouter_manifests](#kubeadm_kuberouter_manifests)
-  * [kubeadm_kuberouter_version](#kubeadm_kuberouter_version)
-  * [kubeadm_local_address](#kubeadm_local_address)
-  * [kubeadm_local_port](#kubeadm_local_port)
-  * [kubeadm_master_nodes](#kubeadm_master_nodes)
-  * [kubeadm_network_provider](#kubeadm_network_provider)
-  * [kubeadm_worker_nodes](#kubeadm_worker_nodes)
-* [Dependencies](#dependencies)
-* [License](#license)
-* [Author](#author)
+- [Default Variables](#default-variables)
+  - [kubeadm_apiserver_certsans](#kubeadm_apiserver_certsans)
+  - [kubeadm_apiserver_endpoint](#kubeadm_apiserver_endpoint)
+  - [kubeadm_bootstrap_expire](#kubeadm_bootstrap_expire)
+  - [kubeadm_bootstrap_token](#kubeadm_bootstrap_token)
+  - [kubeadm_calico_manifests](#kubeadm_calico_manifests)
+  - [kubeadm_calico_version](#kubeadm_calico_version)
+  - [kubeadm_canal_manifests](#kubeadm_canal_manifests)
+  - [kubeadm_canal_version](#kubeadm_canal_version)
+  - [kubeadm_cloud_provider](#kubeadm_cloud_provider)
+  - [kubeadm_cluster_configuration](#kubeadm_cluster_configuration)
+  - [kubeadm_cluster_name](#kubeadm_cluster_name)
+  - [kubeadm_cri_socket](#kubeadm_cri_socket)
+  - [kubeadm_default_apiserver_args](#kubeadm_default_apiserver_args)
+  - [kubeadm_default_controller_args](#kubeadm_default_controller_args)
+  - [kubeadm_default_kubelet_args](#kubeadm_default_kubelet_args)
+  - [kubeadm_default_scheduler_args](#kubeadm_default_scheduler_args)
+  - [kubeadm_extra_apiserver_args](#kubeadm_extra_apiserver_args)
+  - [kubeadm_extra_controller_args](#kubeadm_extra_controller_args)
+  - [kubeadm_extra_kubelet_args](#kubeadm_extra_kubelet_args)
+  - [kubeadm_extra_scheduler_args](#kubeadm_extra_scheduler_args)
+  - [kubeadm_flannel_manifests](#kubeadm_flannel_manifests)
+  - [kubeadm_flannel_version](#kubeadm_flannel_version)
+  - [kubeadm_general_networking](#kubeadm_general_networking)
+  - [kubeadm_init_configuration](#kubeadm_init_configuration)
+  - [kubeadm_join_configuration](#kubeadm_join_configuration)
+  - [kubeadm_kubelet_configuration](#kubeadm_kubelet_configuration)
+  - [kubeadm_kubeproxy_configuration](#kubeadm_kubeproxy_configuration)
+  - [kubeadm_kubernetes_version](#kubeadm_kubernetes_version)
+  - [kubeadm_kuberouter_manifests](#kubeadm_kuberouter_manifests)
+  - [kubeadm_kuberouter_version](#kubeadm_kuberouter_version)
+  - [kubeadm_local_address](#kubeadm_local_address)
+  - [kubeadm_local_port](#kubeadm_local_port)
+  - [kubeadm_master_nodes](#kubeadm_master_nodes)
+  - [kubeadm_network_provider](#kubeadm_network_provider)
+  - [kubeadm_worker_nodes](#kubeadm_worker_nodes)
+- [Discovered Tags](#discovered-tags)
+- [Dependencies](#dependencies)
+- [License](#license)
+- [Author](#author)
 
 ---
 
@@ -165,13 +166,20 @@ Kubeadm cluster configuration content
 #### Default value
 
 ```YAML
-kubeadm_cluster_configuration: "clusterName: {{ kubeadm_cluster_name }}\nkubernetesVersion:\
-  \ stable-{{ kubeadm_kubernetes_version }}\ncontrolPlaneEndpoint: {{ kubeadm_apiserver_endpoint\
-  \ }}\napiServer:\n  extraArgs: {{ kubeadm_default_apiserver_args | combine(kubeadm_extra_apiserver_args)\
-  \ }}\n  certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}\nscheduler:\n  extraArgs:\
-  \ {{ kubeadm_default_scheduler_args | combine(kubeadm_extra_scheduler_args) }}\n\
-  controllerManager:\n  extraArgs: {{ kubeadm_default_controller_args | combine(kubeadm_extra_controller_args)\
-  \ }}\nnetworking:\n  serviceSubnet: 10.96.0.0/16\n  podSubnet: 10.244.0.0/16\n"
+kubeadm_cluster_configuration: |
+  clusterName: {{ kubeadm_cluster_name }}
+  kubernetesVersion: stable-{{ kubeadm_kubernetes_version }}
+  controlPlaneEndpoint: {{ kubeadm_apiserver_endpoint }}
+  apiServer:
+    extraArgs: {{ kubeadm_default_apiserver_args | combine(kubeadm_extra_apiserver_args) }}
+    certSANs: {{ kubeadm_apiserver_certsans | from_yaml }}
+  scheduler:
+    extraArgs: {{ kubeadm_default_scheduler_args | combine(kubeadm_extra_scheduler_args) }}
+  controllerManager:
+    extraArgs: {{ kubeadm_default_controller_args | combine(kubeadm_extra_controller_args) }}
+  networking:
+    serviceSubnet: 10.96.0.0/16
+    podSubnet: 10.244.0.0/16
 ```
 
 ### kubeadm_cluster_name
@@ -321,13 +329,22 @@ Kubeadm init configuration content
 #### Default value
 
 ```YAML
-kubeadm_init_configuration: "bootstrapTokens:\n  - token: {{ kubeadm_bootstrap_token\
-  \ }}\n    ttl: \"{{ kubeadm_bootstrap_expire }}\"\n    usages:\n      - signing\n\
-  \      - authentication\n    groups:\n      - system:bootstrappers:kubeadm:default-node-token\n\
-  localAPIEndpoint:\n  advertiseAddress: {{ kubeadm_local_address }}\n  bindPort:\
-  \ {{ kubeadm_local_port }}\nnodeRegistration:\n  criSocket: {{ kubeadm_cri_socket\
-  \ }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs: {{ kubeadm_default_kubelet_args\
-  \ | combine(kubeadm_extra_kubelet_args) }}\n"
+kubeadm_init_configuration: |
+  bootstrapTokens:
+    - token: {{ kubeadm_bootstrap_token }}
+      ttl: "{{ kubeadm_bootstrap_expire }}"
+      usages:
+        - signing
+        - authentication
+      groups:
+        - system:bootstrappers:kubeadm:default-node-token
+  localAPIEndpoint:
+    advertiseAddress: {{ kubeadm_local_address }}
+    bindPort: {{ kubeadm_local_port }}
+  nodeRegistration:
+    criSocket: {{ kubeadm_cri_socket }}
+    name: {{ inventory_hostname }}
+    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
 ```
 
 ### kubeadm_join_configuration
@@ -337,13 +354,22 @@ Kubeadm join configuration content
 #### Default value
 
 ```YAML
-kubeadm_join_configuration: "discovery:\n  bootstrapToken:\n    apiServerEndpoint:\
-  \ {{ kubeadm_apiserver_endpoint }}\n    token: {{ kubeadm_bootstrap_token }}\n \
-  \   unsafeSkipCAVerification: True\n{% if inventory_hostname in kubeadm_master_nodes\
-  \ %}\ncontrolPlane:\n  localAPIEndpoint:\n    advertiseAddress: {{ kubeadm_local_address\
-  \ }}\n    bindPort: {{ kubeadm_local_port }}\n{% endif %}\nnodeRegistration:\n \
-  \ criSocket: {{ kubeadm_cri_socket }}\n  name: {{ inventory_hostname }}\n  kubeletExtraArgs:\
-  \ {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}\n"
+kubeadm_join_configuration: |
+  discovery:
+    bootstrapToken:
+      apiServerEndpoint: {{ kubeadm_apiserver_endpoint }}
+      token: {{ kubeadm_bootstrap_token }}
+      unsafeSkipCAVerification: True
+  {% if inventory_hostname in kubeadm_master_nodes %}
+  controlPlane:
+    localAPIEndpoint:
+      advertiseAddress: {{ kubeadm_local_address }}
+      bindPort: {{ kubeadm_local_port }}
+  {% endif %}
+  nodeRegistration:
+    criSocket: {{ kubeadm_cri_socket }}
+    name: {{ inventory_hostname }}
+    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
 ```
 
 ### kubeadm_kubelet_configuration
@@ -466,9 +492,14 @@ kubeadm_worker_nodes:
   - worker-03
 ```
 
+## Discovered Tags
+
+**_kubeadm_**
+
+
 ## Dependencies
 
-* None
+- None
 
 ## License
 
