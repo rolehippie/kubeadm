@@ -1,7 +1,7 @@
 ---
 repository:
   name: kubeadm
-  description: Ansible role to install kubeadm and bootstrap Kubernetes
+  description: Ansible role to install kubeadm and bootstrap single node Kubernetes
   topics: ansible, role, ansible-role, hacktoberfest
 
   private: false

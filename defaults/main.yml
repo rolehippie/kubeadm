@@ -1,64 +1,26 @@
 # Standards: 1.2
 ---
-# @var kubeadm_kubernetes_version:description: Vrsion of Kubernetes to install
-kubeadm_kubernetes_version: 1.23
-
-# @var kubeadm_master_nodes:description: List of node names part of master role
-# @var kubeadm_master_nodes:example: >
-# kubeadm_master_nodes:
-#   - master-01
-#   - master-02
-#   - master-03
-# @end
-kubeadm_master_nodes: []
-
-# @var kubeadm_worker_nodes:description: List of node names part of worker role
-# @var kubeadm_worker_nodes:example: >
-# kubeadm_worker_nodes:
-#   - worker-01
-#   - worker-02
-#   - worker-03
-# @end
-kubeadm_worker_nodes: []
-
-# @var kubeadm_bootstrap_token:description: Bootstrap tolken used for node init and join
-# @var kubeadm_bootstrap_token:example: $ "abcdef.0123456789abcdef"
-kubeadm_bootstrap_token:
-
-# @var kubeadm_bootstrap_expire:description: Expire duration for bootstrap token, never expires by default
-kubeadm_bootstrap_expire: 0
-
 # @var kubeadm_cluster_name:description: Name of the Kubernetes cluster
 kubeadm_cluster_name: kubernetes
 
-# @var kubeadm_local_address:description: Address to bind the controlplane to
-kubeadm_local_address: 127.0.0.1
-
-# @var kubeadm_local_port:description: Port to bind the controlplane to
-kubeadm_local_port: 6443
-
-kubeadm_cloud_provider: external
+# @var kubeadm_kubernetes_version:description: Vrsion of Kubernetes to install
+kubeadm_kubernetes_version: 1.23
 
 # @var kubeadm_apiserver_endpoint:description: Fixed endpoint for the controlplane
 # @var kubeadm_apiserver_endpoint:example: $ "kubernetes.example.com:6443"
 kubeadm_apiserver_endpoint: 127.0.0.1:6443
 
+# @var kubeadm_apiserver_certsans:description: Extra sans for the apiserver
+kubeadm_apiserver_certsans: []
+
 # @var kubeadm_default_apiserver_args:description: Default args for the apiserver
 kubeadm_default_apiserver_args:
   bind-address: 0.0.0.0
-  cloud-provider: "{{ kubeadm_cloud_provider }}"
+  cloud-provider: external
   authorization-mode: Node,RBAC
 
 # @var kubeadm_extra_apiserver_args:description: Extra args for the apiserver
 kubeadm_extra_apiserver_args: {}
-
-# @var kubeadm_default_kubelet_args:description: Default args for the kubelet
-kubeadm_default_kubelet_args:
-  node-ip: "{{ kubeadm_local_address }}"
-  cloud-provider: "{{ kubeadm_cloud_provider }}"
-
-# @var kubeadm_extra_kubelet_args:description: Extra args for the kubelet
-kubeadm_extra_kubelet_args: {}
 
 # @var kubeadm_default_scheduler_args:description: Default args for the scheduler
 kubeadm_default_scheduler_args:
@@ -70,55 +32,41 @@ kubeadm_extra_scheduler_args: {}
 # @var kubeadm_default_controller_args:description: Default args for the controller
 kubeadm_default_controller_args:
   bind-address: 0.0.0.0
-  cloud-provider: "{{ kubeadm_cloud_provider }}"
+  cloud-provider: external
 
 # @var kubeadm_extra_controller_args:description: Extra args for the controller
 kubeadm_extra_controller_args: {}
 
-# @var kubeadm_apiserver_certsans:description: Extra sans for the apiserver
-kubeadm_apiserver_certsans: []
+# @var kubeadm_service_subnet:description: Used subnet for services
+kubeadm_service_subnet: 10.96.0.0/16
+
+# @var kubeadm_pod_subnet:description: Used subnet for pods
+kubeadm_pod_subnet: 10.244.0.0/16
+
+# @var kubeadm_local_address:description: Address to bind the controlplane to
+kubeadm_local_address: 0.0.0.0
+
+# @var kubeadm_local_port:description: Port to bind the controlplane to
+kubeadm_local_port: 6443
 
 # @var kubeadm_cri_socket:description: Path to container runtime socket
 kubeadm_cri_socket: /run/containerd/containerd.sock
 
-# @var kubeadm_init_configuration:description: Kubeadm init configuration content
-kubeadm_init_configuration: |
-  bootstrapTokens:
-    - token: {{ kubeadm_bootstrap_token }}
-      ttl: "{{ kubeadm_bootstrap_expire }}"
-      usages:
-        - signing
-        - authentication
-      groups:
-        - system:bootstrappers:kubeadm:default-node-token
+# @var kubeadm_init_config:description: Kubeadm init configuration content
+kubeadm_init_config: |
+  apiVersion: kubeadm.k8s.io/v1beta3
+  kind: InitConfiguration
   localAPIEndpoint:
     advertiseAddress: {{ kubeadm_local_address }}
     bindPort: {{ kubeadm_local_port }}
   nodeRegistration:
     criSocket: {{ kubeadm_cri_socket }}
     name: {{ inventory_hostname }}
-    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
 
-# @var kubeadm_join_configuration:description: Kubeadm join configuration content
-kubeadm_join_configuration: |
-  discovery:
-    bootstrapToken:
-      apiServerEndpoint: {{ kubeadm_apiserver_endpoint }}
-      token: {{ kubeadm_bootstrap_token }}
-      unsafeSkipCAVerification: True
-  {% if inventory_hostname in kubeadm_master_nodes %}
-  controlPlane:
-    localAPIEndpoint:
-      advertiseAddress: {{ kubeadm_local_address }}
-      bindPort: {{ kubeadm_local_port }}
-  {% endif %}
-  nodeRegistration:
-    criSocket: {{ kubeadm_cri_socket }}
-    name: {{ inventory_hostname }}
-    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
-
-# @var kubeadm_cluster_configuration:description: Kubeadm cluster configuration content
-kubeadm_cluster_configuration: |
+# @var kubeadm_cluster_config:description: Kubeadm cluster configuration content
+kubeadm_cluster_config: |
+  apiVersion: kubeadm.k8s.io/v1beta3
+  kind: ClusterConfiguration
   clusterName: {{ kubeadm_cluster_name }}
   kubernetesVersion: stable-{{ kubeadm_kubernetes_version }}
   controlPlaneEndpoint: {{ kubeadm_apiserver_endpoint }}
@@ -130,21 +78,24 @@ kubeadm_cluster_configuration: |
   controllerManager:
     extraArgs: {{ kubeadm_default_controller_args | combine(kubeadm_extra_controller_args) }}
   networking:
-    serviceSubnet: 10.96.0.0/16
-    podSubnet: 10.244.0.0/16
+    serviceSubnet: {{ kubeadm_service_subnet }}
+    podSubnet: {{ kubeadm_pod_subnet }}
 
-# @var kubeadm_kubelet_configuration:description: Kubelet configuration content, optionally available
-kubeadm_kubelet_configuration:
+# @var kubeadm_kubelet_config_enabled:description: Enable the kublet configuration
+kubeadm_kubelet_config_enabled: False
 
-# @var kubeadm_kubeproxy_configuration:description: Kubeproxy configuration content, optionally available
-kubeadm_kubeproxy_configuration:
+# @var kubeadm_kubelet_config:description: Kubelet configuration content, optionally available
+kubeadm_kubelet_config: |
+  apiVersion: kubelet.config.k8s.io/v1beta1
+  kind: KubeletConfiguration
 
-# @var kubeadm_kuberouter_version:description: Version of kube-router manifest
-kubeadm_kuberouter_version: 1.4.0
+# @var kubeadm_kubeproxy_config_enabled:description: Enable the kubeproxy configuration
+kubeadm_kubeproxy_config_enabled: False
 
-# @var kubeadm_kuberouter_manifests:description: List of manifests for kube-router networking
-kubeadm_kuberouter_manifests:
-  - "https://raw.githubusercontent.com/cloudnativelabs/kube-router/v{{ kubeadm_kuberouter_version }}/daemonset/kubeadm-kuberouter-all-features.yaml"
+# @var kubeadm_kubeproxy_config:description: Kubeproxy configuration content, optionally available
+kubeadm_kubeproxy_config: |
+  apiVersion: kubeproxy.config.k8s.io/v1alpha1
+  kind: KubeProxyConfiguration
 
 # @var kubeadm_flannel_version:description: Version of flannel manifest
 kubeadm_flannel_version: 0.16.1

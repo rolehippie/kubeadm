@@ -2,7 +2,7 @@
 
 [![Source Code](https://img.shields.io/badge/github-source%20code-blue?logo=github&logoColor=white)](https://github.com/rolehippie/kubeadm) [![Testing Build](https://github.com/rolehippie/kubeadm/workflows/testing/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Atesting) [![Readme Build](https://github.com/rolehippie/kubeadm/workflows/readme/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Areadme) [![Galaxy Build](https://github.com/rolehippie/kubeadm/workflows/galaxy/badge.svg)](https://github.com/rolehippie/kubeadm/actions?query=workflow%3Agalaxy) [![License: Apache-2.0](https://img.shields.io/github/license/rolehippie/kubeadm)](https://github.com/rolehippie/kubeadm/blob/master/LICENSE)
 
-Ansible role to install kubeadm and bootstrap Kubernetes.
+Ansible role to install kubeadm and bootstrap single node Kubernetes.
 
 ## Sponsor
 
@@ -13,39 +13,33 @@ Building and improving this Ansible role have been sponsored by my current and p
 - [Default Variables](#default-variables)
   - [kubeadm_apiserver_certsans](#kubeadm_apiserver_certsans)
   - [kubeadm_apiserver_endpoint](#kubeadm_apiserver_endpoint)
-  - [kubeadm_bootstrap_expire](#kubeadm_bootstrap_expire)
-  - [kubeadm_bootstrap_token](#kubeadm_bootstrap_token)
   - [kubeadm_calico_manifests](#kubeadm_calico_manifests)
   - [kubeadm_calico_version](#kubeadm_calico_version)
   - [kubeadm_canal_manifests](#kubeadm_canal_manifests)
   - [kubeadm_canal_version](#kubeadm_canal_version)
-  - [kubeadm_cloud_provider](#kubeadm_cloud_provider)
-  - [kubeadm_cluster_configuration](#kubeadm_cluster_configuration)
+  - [kubeadm_cluster_config](#kubeadm_cluster_config)
   - [kubeadm_cluster_name](#kubeadm_cluster_name)
   - [kubeadm_cri_socket](#kubeadm_cri_socket)
   - [kubeadm_default_apiserver_args](#kubeadm_default_apiserver_args)
   - [kubeadm_default_controller_args](#kubeadm_default_controller_args)
-  - [kubeadm_default_kubelet_args](#kubeadm_default_kubelet_args)
   - [kubeadm_default_scheduler_args](#kubeadm_default_scheduler_args)
   - [kubeadm_extra_apiserver_args](#kubeadm_extra_apiserver_args)
   - [kubeadm_extra_controller_args](#kubeadm_extra_controller_args)
-  - [kubeadm_extra_kubelet_args](#kubeadm_extra_kubelet_args)
   - [kubeadm_extra_scheduler_args](#kubeadm_extra_scheduler_args)
   - [kubeadm_flannel_manifests](#kubeadm_flannel_manifests)
   - [kubeadm_flannel_version](#kubeadm_flannel_version)
   - [kubeadm_general_networking](#kubeadm_general_networking)
-  - [kubeadm_init_configuration](#kubeadm_init_configuration)
-  - [kubeadm_join_configuration](#kubeadm_join_configuration)
-  - [kubeadm_kubelet_configuration](#kubeadm_kubelet_configuration)
-  - [kubeadm_kubeproxy_configuration](#kubeadm_kubeproxy_configuration)
+  - [kubeadm_init_config](#kubeadm_init_config)
+  - [kubeadm_kubelet_config](#kubeadm_kubelet_config)
+  - [kubeadm_kubelet_config_enabled](#kubeadm_kubelet_config_enabled)
+  - [kubeadm_kubeproxy_config](#kubeadm_kubeproxy_config)
+  - [kubeadm_kubeproxy_config_enabled](#kubeadm_kubeproxy_config_enabled)
   - [kubeadm_kubernetes_version](#kubeadm_kubernetes_version)
-  - [kubeadm_kuberouter_manifests](#kubeadm_kuberouter_manifests)
-  - [kubeadm_kuberouter_version](#kubeadm_kuberouter_version)
   - [kubeadm_local_address](#kubeadm_local_address)
   - [kubeadm_local_port](#kubeadm_local_port)
-  - [kubeadm_master_nodes](#kubeadm_master_nodes)
   - [kubeadm_network_provider](#kubeadm_network_provider)
-  - [kubeadm_worker_nodes](#kubeadm_worker_nodes)
+  - [kubeadm_pod_subnet](#kubeadm_pod_subnet)
+  - [kubeadm_service_subnet](#kubeadm_service_subnet)
 - [Discovered Tags](#discovered-tags)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -79,32 +73,6 @@ kubeadm_apiserver_endpoint: 127.0.0.1:6443
 
 ```YAML
 kubeadm_apiserver_endpoint: kubernetes.example.com:6443
-```
-
-### kubeadm_bootstrap_expire
-
-Expire duration for bootstrap token, never expires by default
-
-#### Default value
-
-```YAML
-kubeadm_bootstrap_expire: 0
-```
-
-### kubeadm_bootstrap_token
-
-Bootstrap tolken used for node init and join
-
-#### Default value
-
-```YAML
-kubeadm_bootstrap_token:
-```
-
-#### Example usage
-
-```YAML
-kubeadm_bootstrap_token: abcdef.0123456789abcdef
 ```
 
 ### kubeadm_calico_manifests
@@ -149,22 +117,16 @@ Version of canal manifest
 kubeadm_canal_version: 3.21
 ```
 
-### kubeadm_cloud_provider
-
-#### Default value
-
-```YAML
-kubeadm_cloud_provider: external
-```
-
-### kubeadm_cluster_configuration
+### kubeadm_cluster_config
 
 Kubeadm cluster configuration content
 
 #### Default value
 
 ```YAML
-kubeadm_cluster_configuration: |
+kubeadm_cluster_config: |
+  apiVersion: kubeadm.k8s.io/v1beta3
+  kind: ClusterConfiguration
   clusterName: {{ kubeadm_cluster_name }}
   kubernetesVersion: stable-{{ kubeadm_kubernetes_version }}
   controlPlaneEndpoint: {{ kubeadm_apiserver_endpoint }}
@@ -176,8 +138,8 @@ kubeadm_cluster_configuration: |
   controllerManager:
     extraArgs: {{ kubeadm_default_controller_args | combine(kubeadm_extra_controller_args) }}
   networking:
-    serviceSubnet: 10.96.0.0/16
-    podSubnet: 10.244.0.0/16
+    serviceSubnet: {{ kubeadm_service_subnet }}
+    podSubnet: {{ kubeadm_pod_subnet }}
 ```
 
 ### kubeadm_cluster_name
@@ -209,7 +171,7 @@ Default args for the apiserver
 ```YAML
 kubeadm_default_apiserver_args:
   bind-address: 0.0.0.0
-  cloud-provider: '{{ kubeadm_cloud_provider }}'
+  cloud-provider: external
   authorization-mode: Node,RBAC
 ```
 
@@ -222,19 +184,7 @@ Default args for the controller
 ```YAML
 kubeadm_default_controller_args:
   bind-address: 0.0.0.0
-  cloud-provider: '{{ kubeadm_cloud_provider }}'
-```
-
-### kubeadm_default_kubelet_args
-
-Default args for the kubelet
-
-#### Default value
-
-```YAML
-kubeadm_default_kubelet_args:
-  node-ip: '{{ kubeadm_local_address }}'
-  cloud-provider: '{{ kubeadm_cloud_provider }}'
+  cloud-provider: external
 ```
 
 ### kubeadm_default_scheduler_args
@@ -266,16 +216,6 @@ Extra args for the controller
 
 ```YAML
 kubeadm_extra_controller_args: {}
-```
-
-### kubeadm_extra_kubelet_args
-
-Extra args for the kubelet
-
-#### Default value
-
-```YAML
-kubeadm_extra_kubelet_args: {}
 ```
 
 ### kubeadm_extra_scheduler_args
@@ -320,74 +260,66 @@ List of manifests for general networking
 kubeadm_general_networking: []
 ```
 
-### kubeadm_init_configuration
+### kubeadm_init_config
 
 Kubeadm init configuration content
 
 #### Default value
 
 ```YAML
-kubeadm_init_configuration: |
-  bootstrapTokens:
-    - token: {{ kubeadm_bootstrap_token }}
-      ttl: "{{ kubeadm_bootstrap_expire }}"
-      usages:
-        - signing
-        - authentication
-      groups:
-        - system:bootstrappers:kubeadm:default-node-token
+kubeadm_init_config: |
+  apiVersion: kubeadm.k8s.io/v1beta3
+  kind: InitConfiguration
   localAPIEndpoint:
     advertiseAddress: {{ kubeadm_local_address }}
     bindPort: {{ kubeadm_local_port }}
   nodeRegistration:
     criSocket: {{ kubeadm_cri_socket }}
     name: {{ inventory_hostname }}
-    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
 ```
 
-### kubeadm_join_configuration
-
-Kubeadm join configuration content
-
-#### Default value
-
-```YAML
-kubeadm_join_configuration: |
-  discovery:
-    bootstrapToken:
-      apiServerEndpoint: {{ kubeadm_apiserver_endpoint }}
-      token: {{ kubeadm_bootstrap_token }}
-      unsafeSkipCAVerification: True
-  {% if inventory_hostname in kubeadm_master_nodes %}
-  controlPlane:
-    localAPIEndpoint:
-      advertiseAddress: {{ kubeadm_local_address }}
-      bindPort: {{ kubeadm_local_port }}
-  {% endif %}
-  nodeRegistration:
-    criSocket: {{ kubeadm_cri_socket }}
-    name: {{ inventory_hostname }}
-    kubeletExtraArgs: {{ kubeadm_default_kubelet_args | combine(kubeadm_extra_kubelet_args) }}
-```
-
-### kubeadm_kubelet_configuration
+### kubeadm_kubelet_config
 
 Kubelet configuration content, optionally available
 
 #### Default value
 
 ```YAML
-kubeadm_kubelet_configuration:
+kubeadm_kubelet_config: |
+  apiVersion: kubelet.config.k8s.io/v1beta1
+  kind: KubeletConfiguration
 ```
 
-### kubeadm_kubeproxy_configuration
+### kubeadm_kubelet_config_enabled
+
+Enable the kublet configuration
+
+#### Default value
+
+```YAML
+kubeadm_kubelet_config_enabled: false
+```
+
+### kubeadm_kubeproxy_config
 
 Kubeproxy configuration content, optionally available
 
 #### Default value
 
 ```YAML
-kubeadm_kubeproxy_configuration:
+kubeadm_kubeproxy_config: |
+  apiVersion: kubeproxy.config.k8s.io/v1alpha1
+  kind: KubeProxyConfiguration
+```
+
+### kubeadm_kubeproxy_config_enabled
+
+Enable the kubeproxy configuration
+
+#### Default value
+
+```YAML
+kubeadm_kubeproxy_config_enabled: false
 ```
 
 ### kubeadm_kubernetes_version
@@ -400,28 +332,6 @@ Vrsion of Kubernetes to install
 kubeadm_kubernetes_version: 1.23
 ```
 
-### kubeadm_kuberouter_manifests
-
-List of manifests for kube-router networking
-
-#### Default value
-
-```YAML
-kubeadm_kuberouter_manifests:
-  - https://raw.githubusercontent.com/cloudnativelabs/kube-router/v{{ kubeadm_kuberouter_version
-    }}/daemonset/kubeadm-kuberouter-all-features.yaml
-```
-
-### kubeadm_kuberouter_version
-
-Version of kube-router manifest
-
-#### Default value
-
-```YAML
-kubeadm_kuberouter_version: 1.4.0
-```
-
 ### kubeadm_local_address
 
 Address to bind the controlplane to
@@ -429,7 +339,7 @@ Address to bind the controlplane to
 #### Default value
 
 ```YAML
-kubeadm_local_address: 127.0.0.1
+kubeadm_local_address: 0.0.0.0
 ```
 
 ### kubeadm_local_port
@@ -442,25 +352,6 @@ Port to bind the controlplane to
 kubeadm_local_port: 6443
 ```
 
-### kubeadm_master_nodes
-
-List of node names part of master role
-
-#### Default value
-
-```YAML
-kubeadm_master_nodes: []
-```
-
-#### Example usage
-
-```YAML
-kubeadm_master_nodes:
-  - master-01
-  - master-02
-  - master-03
-```
-
 ### kubeadm_network_provider
 
 Name of network provider to use, could be kuberouter, flannel, calico or canal
@@ -471,23 +362,24 @@ Name of network provider to use, could be kuberouter, flannel, calico or canal
 kubeadm_network_provider: none
 ```
 
-### kubeadm_worker_nodes
+### kubeadm_pod_subnet
 
-List of node names part of worker role
+Used subnet for pods
 
 #### Default value
 
 ```YAML
-kubeadm_worker_nodes: []
+kubeadm_pod_subnet: 10.244.0.0/16
 ```
 
-#### Example usage
+### kubeadm_service_subnet
+
+Used subnet for services
+
+#### Default value
 
 ```YAML
-kubeadm_worker_nodes:
-  - worker-01
-  - worker-02
-  - worker-03
+kubeadm_service_subnet: 10.96.0.0/16
 ```
 
 ## Discovered Tags

@@ -75,17 +75,123 @@
   tags:
     - kubeadm
 
-- name: Handle init tasks
-  when:
-    - inventory_hostname == kubeadm_master_nodes | sort | first
-  include_tasks: init.yml
+- name: Stat kubelet config
+  register: kubeadm_kubelet_file
+  stat:
+    path: /etc/kubernetes/kubelet.conf
   tags:
     - kubeadm
 
-- name: Handle join tasks
+- name: Write kubeadm config
+  copy:
+    content: |
+      ---
+      {{ kubeadm_init_config | from_yaml | to_nice_yaml(indent=2) | trim }}
+      ...
+      ---
+      {{ kubeadm_cluster_config | from_yaml | to_nice_yaml(indent=2) | trim }}
+      ...
+      {% if kubeadm_kubelet_config_enabled | default(False) %}
+      ---
+      {{ kubeadm_kubelet_config | from_yaml | to_nice_yaml(indent=2) | trim }}
+      ...
+      {% endif %}
+      {% if kubeadm_kubeproxy_config_enabled | default(False) %}
+      ---
+      {{ kubeadm_kubeproxy_config | from_yaml | to_nice_yaml(indent=2) | trim }}
+      ...
+      {% endif %}
+    dest: /etc/kubernetes/kubeadm.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=
+  tags:
+    - kubeadm
+
+- name: Kubeadm init command
+  when: not kubeadm_kubelet_file.stat.exists | default(True)
+  shell:
+    cmd: |
+      kubeadm \
+        init \
+        --config /etc/kubernetes/kubeadm.conf \
+        2>&1 | tee -a /var/log/kubeadm.log
+  tags:
+    - kubeadm
+
+- name: Kubeadm upgrade command
+  when: kubeadm_kubelet_file.stat.exists | default(False)
+  shell:
+    cmd: |
+      kubeadm \
+        upgrade \
+        apply \
+        --config /etc/kubernetes/kubeadm.conf \
+        --yes \
+        2>&1 | tee -a /var/log/kubeadm.log
+  tags:
+    - kubeadm
+
+- name: Untaint master nodes
+  register: kubeadm_master_taint
+  changed_when: "'untainted' in kubeadm_master_taint.stdout"
+  failed_when: "kubeadm_master_taint.rc > 0 and 'not found' not in kubeadm_master_taint.stderr"
+  command:
+    cmd: kubectl taint nodes --all node-role.kubernetes.io/master-
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tags:
+    - kubeadm
+
+- name: Configure flannel network
   when:
-    - inventory_hostname != kubeadm_master_nodes | sort | first
-  include_tasks: join.yml
+    - kubeadm_network_provider == 'flannel'
+  loop: "{{ kubeadm_flannel_manifests }}"
+  register: kubeadm_flannel_install
+  changed_when: "'created' in kubeadm_flannel_install.stdout"
+  command:
+    cmd: "kubectl apply -f {{ item }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tags:
+    - kubeadm
+
+- name: Configure calico network
+  when:
+    - kubeadm_network_provider == 'calico'
+  loop: "{{ kubeadm_calico_manifests }}"
+  register: kubeadm_calico_install
+  changed_when: "'created' in kubeadm_calico_install.stdout"
+  command:
+    cmd: "kubectl apply -f {{ item }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tags:
+    - kubeadm
+
+- name: Configure canal network
+  when:
+    - kubeadm_network_provider == 'canal'
+  loop: "{{ kubeadm_canal_manifests }}"
+  register: kubeadm_canal_install
+  changed_when: "'created' in kubeadm_canal_install.stdout"
+  command:
+    cmd: "kubectl apply -f {{ item }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tags:
+    - kubeadm
+
+- name: Configure general network
+  when:
+    - kubeadm_general_networking | default(False)
+  loop: "{{ kubeadm_general_networking }}"
+  register: kubeadm_general_install
+  changed_when: "'created' in kubeadm_general_install.stdout"
+  command:
+    cmd: "kubectl apply -f {{ item }}"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
   tags:
     - kubeadm
 
