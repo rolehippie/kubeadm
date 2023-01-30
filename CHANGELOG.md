@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/rolehippie/kubeadm/compare/v1.0.0...v1.1.0) (2023-01-30)
+
+
+### Features
+
+* replace old apt key handling ([488d128](https://github.com/rolehippie/kubeadm/commit/488d1283b9cfc7e2c9a8ed572b3794280b49b258))
+
 ## 1.0.0 (2023-01-05)
 
 
