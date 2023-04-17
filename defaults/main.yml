@@ -124,4 +124,7 @@ kubeadm_general_networking: []
 # @var kubeadm_network_provider:description: Name of network provider to use, could be kuberouter, flannel, calico or canal
 kubeadm_network_provider: none
 
+# @var kubeadm_keyring:description: Path for the repository keyring
+kubbeadm_keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+
 ...

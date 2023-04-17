@@ -1,5 +1,21 @@
 # Standards: 1.2
 ---
+- name: Download repo key
+  get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    dest: "{{ kubeadm_keyring }}"
+  tags:
+    - kubeadm
+
+- name: Add apt repository
+  apt_repository:
+    repo: deb [signed-by={{ kubeadm_keyring }}] http://apt.kubernetes.io/ kubernetes-xenial main
+    filename: kubernetes
+    update_cache: True
+    state: present
+  tags:
+    - kubeadm
+
 - name: Create required dirs
   loop:
     - /etc/kubernetes
@@ -9,48 +25,6 @@
     owner: root
     group: root
     mode: u=rwx,g=rx,o=rx
-  tags:
-    - kubeadm
-
-- name: Remove legacy key
-  apt_key:
-    id: 59FE0256827269DC81578F928B57C5C2836F4BEB
-    state: absent
-  tags:
-    - kubeadm
-
-- name: Remove legacy repo
-  apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-    filename: kubernetes
-    update_cache: False
-    state: absent
-  tags:
-    - kubeadm
-
-- name: Create keyrings dir
-  file:
-    path: /etc/apt/keyrings
-    owner: root
-    group: root
-    mode:
-    state: directory
-  tags:
-    - kubeadm
-
-- name: Download repo key
-  get_url:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    dest: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-  tags:
-    - kubeadm
-
-- name: Add apt repository
-  apt_repository:
-    repo: deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] http://apt.kubernetes.io/ kubernetes-xenial main
-    filename: kubernetes
-    update_cache: True
-    state: present
   tags:
     - kubeadm
 
