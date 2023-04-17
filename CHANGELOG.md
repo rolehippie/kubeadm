@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/rolehippie/kubeadm/compare/v1.1.0...v1.2.0) (2023-04-17)
+
+
+### Features
+
+* use unified path for repo key and drop legacy key ([923c83b](https://github.com/rolehippie/kubeadm/commit/923c83b59759a5b754666d6289175fc3244791a7))
+
+
+### Bugfixes
+
+* use right default variable name ([acc49ee](https://github.com/rolehippie/kubeadm/commit/acc49eeb292e8804eba117372d9ef9a4ba803e63))
+
 ## [1.1.0](https://github.com/rolehippie/kubeadm/compare/v1.0.0...v1.1.0) (2023-01-30)
 
 
