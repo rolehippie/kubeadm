@@ -17,7 +17,6 @@ Building and improving this Ansible role have been sponsored by my current and p
 
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
-  - [kubbeadm_keyring](#kubbeadm_keyring)
   - [kubeadm_apiserver_certsans](#kubeadm_apiserver_certsans)
   - [kubeadm_apiserver_endpoint](#kubeadm_apiserver_endpoint)
   - [kubeadm_calico_manifests](#kubeadm_calico_manifests)
@@ -61,14 +60,6 @@ Building and improving this Ansible role have been sponsored by my current and p
 
 
 ## Default Variables
-
-### kubbeadm_keyring
-
-#### Default value
-
-```YAML
-kubbeadm_keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
-```
 
 ### kubeadm_apiserver_certsans
 
@@ -302,6 +293,12 @@ kubeadm_init_config: |
 ### kubeadm_keyring
 
 Path for the repository keyring
+
+#### Default value
+
+```YAML
+kubeadm_keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+```
 
 ### kubeadm_kubelet_config
 
