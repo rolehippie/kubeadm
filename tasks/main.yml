@@ -1,9 +1,9 @@
 # Standards: 1.2
 ---
 - name: Download repo key
-  get_url:
-    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    dest: "{{ kubeadm_keyring }}"
+  shell:
+    cmd: "curl -sSL 'https://packages.cloud.google.com/apt/doc/apt-key.gpg' | gpg --dearmor --output {{ kubeadm_keyring }}"
+    creates: "{{ kubeadm_keyring }}"
   tags:
     - kubeadm
 
