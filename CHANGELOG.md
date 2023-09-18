@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/rolehippie/kubeadm/compare/v1.2.0...v1.2.1) (2023-09-18)
+
+
+### Bugfixes
+
+* download repo key in right format ([5d33ff1](https://github.com/rolehippie/kubeadm/commit/5d33ff14a592a968059e5da5726b99ede6e37857))
+
 ## [1.2.0](https://github.com/rolehippie/kubeadm/compare/v1.1.0...v1.2.0) (2023-04-17)
 
 
