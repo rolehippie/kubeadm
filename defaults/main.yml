@@ -1,4 +1,3 @@
-# Standards: 1.2
 ---
 # @var kubeadm_cluster_name:description: Name of the Kubernetes cluster
 kubeadm_cluster_name: kubernetes
