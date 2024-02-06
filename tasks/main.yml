@@ -1,13 +1,13 @@
 ---
 - name: Download repo key
-  shell:
+  ansible.builtin.shell:
     cmd: "curl -sSL 'https://packages.cloud.google.com/apt/doc/apt-key.gpg' | gpg --dearmor --output {{ kubeadm_keyring }}"
     creates: "{{ kubeadm_keyring }}"
   tags:
     - kubeadm
 
 - name: Add apt repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: deb [signed-by={{ kubeadm_keyring }}] http://apt.kubernetes.io/ kubernetes-xenial main
     filename: kubernetes
     update_cache: True
@@ -18,7 +18,7 @@
 - name: Create required dirs
   loop:
     - /etc/kubernetes
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: root
@@ -28,7 +28,7 @@
     - kubeadm
 
 - name: Pin package version
-  copy:
+  ansible.builtin.copy:
     content: |
       Explantion: Pin added by kubeadm role
       Package: kubectl
@@ -57,14 +57,14 @@
     - kubeadm
     - kubelet
     - kubernetes-cni
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   tags:
     - kubeadm
 
 - name: Start kubelet service
-  systemd:
+  ansible.builtin.systemd:
     name: kubelet
     state: started
     daemon_reload: True
@@ -75,13 +75,13 @@
 
 - name: Stat kubelet config
   register: kubeadm_kubelet_file
-  stat:
+  ansible.builtin.stat:
     path: /etc/kubernetes/kubelet.conf
   tags:
     - kubeadm
 
 - name: Write kubeadm config
-  copy:
+  ansible.builtin.copy:
     content: |
       ---
       {{ kubeadm_init_config | from_yaml | to_nice_yaml(indent=2) | trim }}
@@ -108,7 +108,7 @@
 
 - name: Kubeadm init command
   when: not kubeadm_kubelet_file.stat.exists | default(True)
-  shell:
+  ansible.builtin.shell:
     cmd: |
       kubeadm \
         init \
@@ -119,7 +119,7 @@
 
 - name: Kubeadm upgrade command
   when: kubeadm_kubelet_file.stat.exists | default(False)
-  shell:
+  ansible.builtin.shell:
     cmd: |
       kubeadm \
         upgrade \
@@ -134,7 +134,7 @@
   register: kubeadm_master_taint
   changed_when: "'untainted' in kubeadm_master_taint.stdout"
   failed_when: "kubeadm_master_taint.rc > 0 and 'not found' not in kubeadm_master_taint.stderr"
-  command:
+  ansible.builtin.command:
     cmd: kubectl taint nodes --all node-role.kubernetes.io/master-
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -147,7 +147,7 @@
   loop: "{{ kubeadm_flannel_manifests }}"
   register: kubeadm_flannel_install
   changed_when: "'created' in kubeadm_flannel_install.stdout"
-  command:
+  ansible.builtin.command:
     cmd: "kubectl apply -f {{ item }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -160,7 +160,7 @@
   loop: "{{ kubeadm_calico_manifests }}"
   register: kubeadm_calico_install
   changed_when: "'created' in kubeadm_calico_install.stdout"
-  command:
+  ansible.builtin.command:
     cmd: "kubectl apply -f {{ item }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -173,7 +173,7 @@
   loop: "{{ kubeadm_canal_manifests }}"
   register: kubeadm_canal_install
   changed_when: "'created' in kubeadm_canal_install.stdout"
-  command:
+  ansible.builtin.command:
     cmd: "kubectl apply -f {{ item }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
@@ -186,7 +186,7 @@
   loop: "{{ kubeadm_general_networking }}"
   register: kubeadm_general_install
   changed_when: "'created' in kubeadm_general_install.stdout"
-  command:
+  ansible.builtin.command:
     cmd: "kubectl apply -f {{ item }}"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
