@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.0.0](https://github.com/rolehippie/kubeadm/compare/v1.2.1...v2.0.0) (2024-02-12)
+
+
+### Features
+
+* drop support for ubuntu 18.04 ([da48e1e](https://github.com/rolehippie/kubeadm/commit/da48e1e57fd9fe453041dcf7f72018517e028a8d))
+* used full qualified collection names ([25de558](https://github.com/rolehippie/kubeadm/commit/25de55892acb123007fe9c41bd7ed4dfff29b04d))
+
 ## [1.2.1](https://github.com/rolehippie/kubeadm/compare/v1.2.0...v1.2.1) (2023-09-18)
 
 
