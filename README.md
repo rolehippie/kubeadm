@@ -47,6 +47,9 @@ Building and improving this Ansible role have been sponsored by my current and p
   - [kubeadm_network_provider](#kubeadm_network_provider)
   - [kubeadm_pod_subnet](#kubeadm_pod_subnet)
   - [kubeadm_service_subnet](#kubeadm_service_subnet)
+  - [kubectl_keyring](#kubectl_keyring)
+  - [kubectl_legacy_keyring](#kubectl_legacy_keyring)
+  - [kubectl_legacy_repo](#kubectl_legacy_repo)
 - [Discovered Tags](#discovered-tags)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -296,7 +299,7 @@ Path for the repository keyring
 #### Default value
 
 ```YAML
-kubeadm_keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+kubeadm_keyring: /usr/share/keyrings/kubernetes-v{{ kubeadm_kubernetes_version }}-archive-keyring.gpg
 ```
 
 ### kubeadm_kubelet_config
@@ -350,7 +353,7 @@ Vrsion of Kubernetes to install
 #### Default value
 
 ```YAML
-kubeadm_kubernetes_version: 1.23
+kubeadm_kubernetes_version: 1.29
 ```
 
 ### kubeadm_local_address
@@ -401,6 +404,29 @@ Used subnet for services
 
 ```YAML
 kubeadm_service_subnet: 10.96.0.0/16
+```
+
+### kubectl_keyring
+
+Path to legacy keyring which got to be removed
+
+### kubectl_legacy_keyring
+
+#### Default value
+
+```YAML
+kubectl_legacy_keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+```
+
+### kubectl_legacy_repo
+
+Legacy repository that got to be removed
+
+#### Default value
+
+```YAML
+kubectl_legacy_repo: deb [signed-by={{ kubectl_legacy_keyring }}] http://apt.kubernetes.io/
+  kubernetes-xenial main
 ```
 
 ## Discovered Tags
