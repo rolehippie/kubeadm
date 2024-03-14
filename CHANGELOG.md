@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/rolehippie/kubeadm/compare/v2.0.0...v2.1.0) (2024-03-14)
+
+
+### Features
+
+* upgrade to latest versions and use new repositories ([e5df6c8](https://github.com/rolehippie/kubeadm/commit/e5df6c87a1ba0eccdd322a2b5a6210a5305732c4))
+
+
+### Bugfixes
+
+* resolve typo within variable usage ([f26b18b](https://github.com/rolehippie/kubeadm/commit/f26b18ba16fb93422609c9abbba39041723ac6a3))
+
 ## [2.0.0](https://github.com/rolehippie/kubeadm/compare/v1.2.1...v2.0.0) (2024-02-12)
 
 
