@@ -3,7 +3,7 @@
 kubeadm_cluster_name: kubernetes
 
 # @var kubeadm_kubernetes_version:description: Vrsion of Kubernetes to install
-kubeadm_kubernetes_version: 1.23
+kubeadm_kubernetes_version: 1.29
 
 # @var kubeadm_apiserver_endpoint:description: Fixed endpoint for the controlplane
 # @var kubeadm_apiserver_endpoint:example: $ "kubernetes.example.com:6443"
@@ -124,6 +124,12 @@ kubeadm_general_networking: []
 kubeadm_network_provider: none
 
 # @var kubeadm_keyring:description: Path for the repository keyring
-kubeadm_keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+kubeadm_keyring: /usr/share/keyrings/kubernetes-v{{ kubeadm_kubernetes_version }}-archive-keyring.gpg
+
+# @var kubectl_keyring:description: Path to legacy keyring which got to be removed
+kubectl_legacy_keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+
+# @var kubectl_legacy_repo:description: Legacy repository that got to be removed
+kubectl_legacy_repo: "deb [signed-by={{ kubectl_legacy_keyring }}] http://apt.kubernetes.io/ kubernetes-xenial main"
 
 ...

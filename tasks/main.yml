@@ -1,14 +1,34 @@
 ---
+- name: Remove legacy repo
+  when:
+    - kubeadm_legacy_repo | default(False)
+  ansible.builtin.apt_repository:
+    repo: "{{ kubeadm_legacy_repo }}"
+    filename: kubernetes
+    update_cache: False
+    state: absent
+  tags:
+    - kubeadm
+
+- name: Remove legacy keys
+  when:
+    - kubeadm_legacy_keyring | default(False)
+  ansible.builtin.file:
+    path: "{{ kubeadm_legacy_keyring }}"
+    state: absent
+  tags:
+    - kubeadm
+
 - name: Download repo key
   ansible.builtin.shell:
-    cmd: "curl -sSL 'https://packages.cloud.google.com/apt/doc/apt-key.gpg' | gpg --dearmor --output {{ kubeadm_keyring }}"
+    cmd: "curl -sSL 'https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_kubernetes_version }}/deb/Release.key' | gpg --dearmor --output {{ kubeadmkeyring }}"
     creates: "{{ kubeadm_keyring }}"
   tags:
     - kubeadm
 
 - name: Add apt repository
   ansible.builtin.apt_repository:
-    repo: deb [signed-by={{ kubeadm_keyring }}] http://apt.kubernetes.io/ kubernetes-xenial main
+    repo: deb [signed-by={{ kubeadm_keyring }}] https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_kubernetes_version }}/deb/ /
     filename: kubernetes
     update_cache: True
     state: present
