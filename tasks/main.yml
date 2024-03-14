@@ -21,7 +21,7 @@
 
 - name: Download repo key
   ansible.builtin.shell:
-    cmd: "curl -sSL 'https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_kubernetes_version }}/deb/Release.key' | gpg --dearmor --output {{ kubeadmkeyring }}"
+    cmd: "curl -sSL 'https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_kubernetes_version }}/deb/Release.key' | gpg --dearmor --output {{ kubeadm_keyring }}"
     creates: "{{ kubeadm_keyring }}"
   tags:
     - kubeadm
