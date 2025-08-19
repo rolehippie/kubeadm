@@ -1,4 +1,4 @@
-# kubeadm
+# workspace
 
 [![Source Code](https://img.shields.io/badge/github-source%20code-blue?logo=github&logoColor=white)](https://github.com/rolehippie/kubeadm)
 [![General Workflow](https://github.com/rolehippie/kubeadm/actions/workflows/general.yml/badge.svg)](https://github.com/rolehippie/kubeadm/actions/workflows/general.yml)
@@ -97,7 +97,8 @@ List of manifests for calico networking
 
 ```YAML
 kubeadm_calico_manifests:
-  - https://docs.projectcalico.org/v{{ kubeadm_calico_version }}/manifests/calico.yaml
+  - https://docs.projectcalico.org/v{{ kubeadm_calico_version 
+    }}/manifests/calico.yaml
 ```
 
 ### kubeadm_calico_version
@@ -118,7 +119,8 @@ List of manifests for canal networking
 
 ```YAML
 kubeadm_canal_manifests:
-  - https://docs.projectcalico.org/v{{ kubeadm_canal_version }}/manifests/canal.yaml
+  - https://docs.projectcalico.org/v{{ kubeadm_canal_version 
+    }}/manifests/canal.yaml
 ```
 
 ### kubeadm_canal_version
@@ -250,8 +252,8 @@ List of manifests for flannel networking
 
 ```YAML
 kubeadm_flannel_manifests:
-  - https://raw.githubusercontent.com/flannel-io/flannel/v{{ kubeadm_flannel_version
-    }}/Documentation/kube-flannel.yml
+  - https://raw.githubusercontent.com/flannel-io/flannel/v{{ 
+    kubeadm_flannel_version }}/Documentation/kube-flannel.yml
 ```
 
 ### kubeadm_flannel_version
@@ -299,7 +301,8 @@ Path for the repository keyring
 #### Default value
 
 ```YAML
-kubeadm_keyring: /usr/share/keyrings/kubernetes-v{{ kubeadm_kubernetes_version }}-archive-keyring.gpg
+kubeadm_keyring: /usr/share/keyrings/kubernetes-v{{ kubeadm_kubernetes_version 
+  }}-archive-keyring.gpg
 ```
 
 ### kubeadm_kubelet_config
@@ -425,14 +428,13 @@ Legacy repository that got to be removed
 #### Default value
 
 ```YAML
-kubectl_legacy_repo: deb [signed-by={{ kubectl_legacy_keyring }}] http://apt.kubernetes.io/
-  kubernetes-xenial main
+kubectl_legacy_repo: deb [signed-by={{ kubectl_legacy_keyring }}] 
+  http://apt.kubernetes.io/ kubernetes-xenial main
 ```
 
 ## Discovered Tags
 
 **_kubeadm_**
-
 
 ## Dependencies
 
