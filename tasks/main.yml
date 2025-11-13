@@ -1,18 +1,18 @@
 ---
 - name: Remove legacy repo
   when:
-    - kubeadm_legacy_repo | default(False)
+    - kubeadm_legacy_repo | default(false)
   ansible.builtin.apt_repository:
     repo: "{{ kubeadm_legacy_repo }}"
     filename: kubernetes
-    update_cache: False
+    update_cache: false
     state: absent
   tags:
     - kubeadm
 
 - name: Remove legacy keys
   when:
-    - kubeadm_legacy_keyring | default(False)
+    - kubeadm_legacy_keyring | default(false)
   ansible.builtin.file:
     path: "{{ kubeadm_legacy_keyring }}"
     state: absent
@@ -30,7 +30,7 @@
   ansible.builtin.apt_repository:
     repo: deb [signed-by={{ kubeadm_keyring }}] https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_kubernetes_version }}/deb/ /
     filename: kubernetes
-    update_cache: True
+    update_cache: true
     state: present
   tags:
     - kubeadm
@@ -87,9 +87,9 @@
   ansible.builtin.systemd:
     name: kubelet
     state: started
-    daemon_reload: True
-    masked: False
-    enabled: True
+    daemon_reload: true
+    masked: false
+    enabled: true
   tags:
     - kubeadm
 
@@ -109,12 +109,12 @@
       ---
       {{ kubeadm_cluster_config | from_yaml | to_nice_yaml(indent=2) | trim }}
       ...
-      {% if kubeadm_kubelet_config_enabled | default(False) %}
+      {% if kubeadm_kubelet_config_enabled | default(false) %}
       ---
       {{ kubeadm_kubelet_config | from_yaml | to_nice_yaml(indent=2) | trim }}
       ...
       {% endif %}
-      {% if kubeadm_kubeproxy_config_enabled | default(False) %}
+      {% if kubeadm_kubeproxy_config_enabled | default(false) %}
       ---
       {{ kubeadm_kubeproxy_config | from_yaml | to_nice_yaml(indent=2) | trim }}
       ...
@@ -127,7 +127,7 @@
     - kubeadm
 
 - name: Kubeadm init command
-  when: not kubeadm_kubelet_file.stat.exists | default(True)
+  when: not kubeadm_kubelet_file.stat.exists | default(true)
   ansible.builtin.shell:
     cmd: |
       kubeadm \
@@ -138,7 +138,7 @@
     - kubeadm
 
 - name: Kubeadm upgrade command
-  when: kubeadm_kubelet_file.stat.exists | default(False)
+  when: kubeadm_kubelet_file.stat.exists | default(false)
   ansible.builtin.shell:
     cmd: |
       kubeadm \
@@ -202,7 +202,7 @@
 
 - name: Configure general network
   when:
-    - kubeadm_general_networking | default(False)
+    - kubeadm_general_networking | default(false)
   loop: "{{ kubeadm_general_networking }}"
   register: kubeadm_general_install
   changed_when: "'created' in kubeadm_general_install.stdout"

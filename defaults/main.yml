@@ -81,7 +81,7 @@ kubeadm_cluster_config: |
     podSubnet: {{ kubeadm_pod_subnet }}
 
 # @var kubeadm_kubelet_config_enabled:description: Enable the kublet configuration
-kubeadm_kubelet_config_enabled: False
+kubeadm_kubelet_config_enabled: false
 
 # @var kubeadm_kubelet_config:description: Kubelet configuration content, optionally available
 kubeadm_kubelet_config: |
@@ -89,7 +89,7 @@ kubeadm_kubelet_config: |
   kind: KubeletConfiguration
 
 # @var kubeadm_kubeproxy_config_enabled:description: Enable the kubeproxy configuration
-kubeadm_kubeproxy_config_enabled: False
+kubeadm_kubeproxy_config_enabled: false
 
 # @var kubeadm_kubeproxy_config:description: Kubeproxy configuration content, optionally available
 kubeadm_kubeproxy_config: |
