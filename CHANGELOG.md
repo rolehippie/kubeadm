@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/rolehippie/kubeadm/compare/v2.1.0...v2.2.0) (2025-12-15)
+
+
+### Features
+
+* apply new repo structure and update linting ([2acc454](https://github.com/rolehippie/kubeadm/commit/2acc4546c93d071fce8eea244ba23b6221f36ce1))
+
 ## [2.1.0](https://github.com/rolehippie/kubeadm/compare/v2.0.0...v2.1.0) (2024-03-14)
 
 
