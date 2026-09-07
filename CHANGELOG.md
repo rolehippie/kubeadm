@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.4.0](https://github.com/rolehippie/kubeadm/compare/v2.3.0...v2.4.0) (2026-09-07)
+
+### Features
+
+* add separate requirements for molecule run ([04654dc](https://github.com/rolehippie/kubeadm/commit/04654dcdb4ae48c55620d6e01077f9a2a66abaf5))
+
+### Dependencies
+
+* **patch:** update dependency pipx:ansible-core to v2.21.3 ([58b5095](https://github.com/rolehippie/kubeadm/commit/58b5095d6982ad44311c4603a35a3db72fbc1558))
+
 ## [2.3.0](https://github.com/rolehippie/kubeadm/compare/v2.2.0...v2.3.0) (2026-07-27)
 
 ## [2.2.0](https://github.com/rolehippie/kubeadm/compare/v2.1.0...v2.2.0) (2025-12-15)
